@@ -1,0 +1,4 @@
+task 5: could be done using js only, decided to go with form cause we can save this in viewmodel. With one change (form method to get) we could create easily shareable links for endusers
+task 8: decided to go with promises to potentially not overload our servers with requests. Another approach would be to create a new webapi controller and use HttpClientFactory to fetch profiles from gravatar. The latter could use IMemoryCache to save time
+task 9: did not complete cause of time constraints - I'd change IActionResult Create in TodoItemController to PartialViewResult Create returning a PartialView and go from there
+task 10: did not complete cause of time constraints - I'd probably use jqueryui.draggable or something similar to allow reordering items + a webapi to update rank
