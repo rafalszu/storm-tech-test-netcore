@@ -13,16 +13,18 @@ namespace Todo.Controllers
     public class TodoItemController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly IApplicationDbContextWrapper dbContextWrapper;
 
-        public TodoItemController(ApplicationDbContext dbContext)
+        public TodoItemController(ApplicationDbContext dbContext, IApplicationDbContextWrapper dbContextWrapper)
         {
             this.dbContext = dbContext;
+            this.dbContextWrapper = dbContextWrapper;
         }
 
         [HttpGet]
         public IActionResult Create(int todoListId)
         {
-            var todoList = dbContext.SingleTodoList(todoListId);
+            var todoList = dbContextWrapper.SingleTodoList(todoListId);
             var fields = TodoItemCreateFieldsFactory.Create(todoList, User.Id());
             return View(fields);
         }
@@ -44,7 +46,7 @@ namespace Todo.Controllers
         [HttpGet]
         public IActionResult Edit(int todoItemId)
         {
-            var todoItem = dbContext.SingleTodoItem(todoItemId);
+            var todoItem = dbContextWrapper.SingleTodoItem(todoItemId);
             var fields = TodoItemEditFieldsFactory.Create(todoItem);
             return View(fields);
         }
@@ -55,7 +57,7 @@ namespace Todo.Controllers
         {
             if (!ModelState.IsValid) { return View(fields); }
 
-            var todoItem = dbContext.SingleTodoItem(fields.TodoItemId);
+            var todoItem = dbContextWrapper.SingleTodoItem(fields.TodoItemId);
 
             TodoItemEditFieldsFactory.Update(fields, todoItem);
 
@@ -67,7 +69,7 @@ namespace Todo.Controllers
 
         private RedirectToActionResult RedirectToListDetail(int fieldsTodoListId)
         {
-            return RedirectToAction("Detail", "TodoList", new {todoListId = fieldsTodoListId});
+            return RedirectToAction("Detail", "TodoList", new { todoListId = fieldsTodoListId });
         }
     }
 }
