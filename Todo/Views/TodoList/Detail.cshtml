@@ -5,7 +5,20 @@
 
 @{
     ViewData["Title"] = $"List: {Model.Title}";
+    string orderBy = Model.OrderByRank ? "Importance" : "Rank";
 }
+
+<script type="text/javascript">
+    function updateOrderBy() {
+        var item = document.getElementById("OrderByRank");
+        if(item) {
+            var itemvalue = (/true/i).test(item.value);
+            item.value = !itemvalue;
+
+            document.contextform.submit();
+        }
+    }
+</script>
 
 <h2>@ViewData["Title"]</h2>
 
@@ -13,7 +26,7 @@
 
     <ul class="list-group">
 
-        <form method="post">
+        <form name="contextform" method="post">
             @Html.HiddenFor(model => model.TodoListId)
             
             <li class="list-group-item">
@@ -26,10 +39,12 @@
                         @Html.DisplayNameFor(model => model.HideDoneItems)
                     </label>
                 </div>
+                @Html.HiddenFor(model => model.OrderByRank)
+                <a href="#" onclick="return updateOrderBy();">Order by @orderBy</a>
             </li>
         </form>
 
-        @foreach (var item in Model.Items.OrderBy(item => item.Importance))
+        @foreach (var item in Model.Items)
         {
             string contextualClass;
             switch (item.Importance)

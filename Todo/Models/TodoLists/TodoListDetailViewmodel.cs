@@ -12,13 +12,15 @@ namespace Todo.Models.TodoLists
 
         [Display(Name = "Hide done items")]
         public bool HideDoneItems { get; set; }
+        public bool OrderByRank { get; set; }
 
-        public TodoListDetailViewmodel(int todoListId, string title, ICollection<TodoItemSummaryViewmodel> items, bool hideDoneItems)
+        public TodoListDetailViewmodel(int todoListId, string title, ICollection<TodoItemSummaryViewmodel> items, bool hideDoneItems, bool orderByRank)
         {
             Items = items;
             TodoListId = todoListId;
             Title = title;
             HideDoneItems = hideDoneItems;
+            OrderByRank = orderByRank;
         }
     }
 }
