@@ -8,18 +8,6 @@
     string orderBy = Model.OrderByRank ? "Importance" : "Rank";
 }
 
-<script type="text/javascript">
-    function updateOrderBy() {
-        var item = document.getElementById("OrderByRank");
-        if(item) {
-            var itemvalue = (/true/i).test(item.value);
-            item.value = !itemvalue;
-
-            document.contextform.submit();
-        }
-    }
-</script>
-
 <h2>@ViewData["Title"]</h2>
 
 <div class="col-md-6">
@@ -78,9 +66,10 @@
                     </a>
                 </div>
 
-                <div class="col-md-4 text-right">
+                <div class="col-md-4 text-right" data-userhash="@Gravatar.GetHash(item.ResponsibleParty.Email)">
                     <small>
-                        @item.ResponsibleParty.UserName
+                        <span class="username">@item.ResponsibleParty.UserName</span>
+                        <span class="gravatarusername"></span>
 
                         <img src="https://www.gravatar.com/avatar/@Gravatar.GetHash(item.ResponsibleParty.Email)?s=30"/>
 
@@ -92,3 +81,61 @@
         }
     </ul>
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        var gravatarDict = {};
+
+        function updateOrderBy() {
+            var item = document.getElementById("OrderByRank");
+            if(item) {
+                var itemvalue = (/true/i).test(item.value);
+                item.value = !itemvalue;
+
+                document.contextform.submit();
+            }
+        }
+
+        function getProfilesPromise(key) {
+            if(gravatarDict[key]) {
+                console.log('returning key from local cache')
+                return Promise.resolve(gravatarDict[key]);
+            }
+            else {
+                console.log('querying gravatar.com')
+                return fetch(`//en.gravatar.com/${key}.json`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(obj => {
+                        if(obj && obj.entry && Array.isArray(obj.entry)) {
+                            gravatarDict[key] = obj.entry[0];
+                            return obj.entry[0];
+                        }
+                    });
+            }
+        }
+
+        var userhashes = $('div[data-userhash]');
+        userhashes.each(function() {
+            var $item = $(this);
+            var hash = $item.attr('data-userhash');
+            getProfilesPromise(hash)
+                .then(function(result) {
+                    if(result) {
+                        var span = $item.find('.gravatarusername');
+                        if(span && span.length > 0) {
+                            span.text(result.preferredUsername);
+                        }
+                    }
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+        });
+  
+</script>
+}
