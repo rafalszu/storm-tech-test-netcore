@@ -13,11 +13,21 @@
 
     <ul class="list-group">
 
-        <li class="list-group-item">
-            <a asp-action="Create" asp-controller="TodoItem" asp-route-todoListId="@Model.TodoListId">
-                <strong>Add New Item</strong>
-            </a>
-        </li>
+        <form method="post">
+            @Html.HiddenFor(model => model.TodoListId)
+            
+            <li class="list-group-item">
+                <a asp-action="Create" asp-controller="TodoItem" asp-route-todoListId="@Model.TodoListId">
+                    <strong>Add New Item</strong>
+                </a>
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="HideDoneItems" onchange="form.submit();" />
+                        @Html.DisplayNameFor(model => model.HideDoneItems)
+                    </label>
+                </div>
+            </li>
+        </form>
 
         @foreach (var item in Model.Items.OrderBy(item => item.Importance))
         {

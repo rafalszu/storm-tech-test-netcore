@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -31,10 +32,16 @@ namespace Todo.Controllers
             return View(viewmodel);
         }
 
-        public IActionResult Detail(int todoListId)
+        public IActionResult Detail(int todoListId, bool? hideDoneItems)
         {
             var todoList = dbContext.SingleTodoList(todoListId);
-            var viewmodel = TodoListDetailViewmodelFactory.Create(todoList);
+            if(todoList != null && (todoList.Items?.Any() ?? false))
+            {
+                if(hideDoneItems == true)
+                    todoList.Items = todoList.Items.Where(item => item.IsDone == false).ToList();
+            }
+            
+            var viewmodel = TodoListDetailViewmodelFactory.Create(todoList, hideDoneItems ?? false);
             return View(viewmodel);
         }
 
